@@ -4,8 +4,8 @@ import React, { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 
-/** Routes where window smooth-scroll may interfere with interactive canvas/map wheel zooms */
-const HEAVY_ROUTES = ["/map"];
+/** Routes where window smooth-scroll may interfere with internal sidebars/canvas/maps */
+const HEAVY_ROUTES = ["/map", "/forum"];
 
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() || "/";

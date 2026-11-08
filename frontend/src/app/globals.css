@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "remixicon/fonts/remixicon.css";
+@import "lenis/dist/lenis.css";
 @import "./Home.css";
 @custom-variant dark (&:is(.dark *));
 @plugin "daisyui" {
@@ -251,6 +252,10 @@ html {
   }
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: rgba(15, 118, 110, 0.35);
@@ -258,6 +263,15 @@ html {
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(15, 118, 110, 0.55);
+  }
+  .dark .custom-scrollbar {
+    scrollbar-color: rgba(45, 212, 191, 0.4) transparent;
+  }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(45, 212, 191, 0.35);
+  }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(45, 212, 191, 0.6);
   }
 
   /* Premium button. The original references daisyUI's --color-primary-container which is never

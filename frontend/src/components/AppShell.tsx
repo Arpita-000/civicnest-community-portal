@@ -7,6 +7,9 @@ import { Toaster } from "react-hot-toast";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import ScrollProgressButton from "./ScrollProgressButton";
+import FloatingCivicBot from "./FloatingCivicBot";
+import HelpNotification from "./HelpNotification";
+import TopProgressBar from "./TopProgressBar";
 import { useTheme } from "../hooks/useTheme";
 
 const TITLES: Record<string, string> = {
@@ -90,6 +93,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen w-full flex flex-col font-body antialiased selection:bg-teal-500/30 selection:text-teal-900 dark:selection:text-teal-100">
+      <TopProgressBar />
       <SplashCover isDark={isDark} />
       {!isAuthPage && <Navbar />}
       {/* spacer for the fixed navbar */}
@@ -107,6 +111,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </motion.main>
 
       {!isAuthPage && <ScrollProgressButton />}
+      {!isAuthPage && <FloatingCivicBot />}
+      {!isAuthPage && <HelpNotification />}
       <Toaster
         position="bottom-right"
         containerStyle={{ zIndex: 99999 }}

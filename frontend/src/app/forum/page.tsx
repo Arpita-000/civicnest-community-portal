@@ -81,7 +81,10 @@ export default function ForumPage() {
 
   return (
     <div className="flex h-[calc(100vh-76px)] w-full overflow-hidden bg-[#f0f4f2] dark:bg-[#050907]">
-      <aside className="w-full lg:w-80 flex-shrink-0 flex flex-col bg-[#f9fbf9] dark:bg-[#0a120e] border-r border-[#dbe6df] dark:border-[#14241d] h-full z-20">
+      <aside
+        data-lenis-prevent="true"
+        className="w-full lg:w-80 flex-shrink-0 flex flex-col bg-[#f9fbf9] dark:bg-[#0a120e] border-r border-[#dbe6df] dark:border-[#14241d] h-full z-20 select-none shadow-[6px_0_24px_rgba(0,0,0,0.03)]"
+      >
         <div className="px-5 py-4 border-b border-[#e6eee9] dark:border-[#14241d] flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <BackButton variant="dark" className="w-fit" />
@@ -114,7 +117,7 @@ export default function ForumPage() {
           </div>
         </div>
 
-        <div className="p-3.5 space-y-1 border-b border-[#e6eee9] dark:border-[#14241d]">
+        <div data-lenis-prevent="true" className="p-3.5 space-y-1 border-b border-[#e6eee9] dark:border-[#14241d] max-h-[220px] overflow-y-auto custom-scrollbar flex-shrink-0">
           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-2.5 mb-2">Topics</p>
           {CATEGORIES.map((cat) => (
             <button
@@ -132,7 +135,7 @@ export default function ForumPage() {
           ))}
         </div>
 
-        <div className="flex-1 overflow-y-auto p-3.5">
+        <div data-lenis-prevent="true" className="flex-1 overflow-y-auto p-3.5 custom-scrollbar">
           <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest px-2 mb-2.5">
             Active Threads ({filteredThreads.length})
           </p>
@@ -197,7 +200,8 @@ export default function ForumPage() {
           <form
             onSubmit={handleCreateThread}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-[#0a120e] rounded-2xl p-6 max-w-lg w-full border border-slate-200 dark:border-[#1e3040] space-y-4"
+            className="bg-white dark:bg-[#0a120e] rounded-2xl p-6 max-w-lg w-full border border-slate-200 dark:border-[#1e3040] space-y-4 max-h-[85vh] overflow-y-auto custom-scrollbar"
+            data-lenis-prevent="true"
           >
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">Start a Topic Thread</h3>
             <div>
