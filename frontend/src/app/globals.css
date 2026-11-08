@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "remixicon/fonts/remixicon.css";
-@import "lenis/dist/lenis.css";
 @import "./Home.css";
 @custom-variant dark (&:is(.dark *));
 @plugin "daisyui" {
@@ -210,7 +209,10 @@ html {
     scroll-behavior: auto !important;
   }
 
-  .lenis.lenis-smooth [data-lenis-prevent] {
+  .lenis.lenis-smooth [data-lenis-prevent],
+  .lenis [data-lenis-prevent],
+  .lenis [data-lenis-prevent-wheel],
+  .lenis [data-lenis-prevent-touch] {
     overscroll-behavior: contain;
   }
 
