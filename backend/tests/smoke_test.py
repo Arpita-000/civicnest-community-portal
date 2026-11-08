@@ -5,7 +5,7 @@ Run from `backend/`:   python -m tests.smoke_test
 Firebase verification is replaced with fake users (dependency overrides). Every record the
 test creates is tagged with TEST_UID / TEST_EMAIL and removed again at the end.
 """
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi.testclient import TestClient
 
@@ -50,7 +50,7 @@ def issue_payload(**over):
         "description": "The public bin outside the market has been overflowing for three days and attracting stray animals.",
         "category": "Garbage & Waste", "location": "Smoke Test Road", "area": "Ward 1",
         "images": ["https://example.test/a.jpg"],
-        "incidentDate": (datetime.utcnow() - timedelta(days=1)).isoformat(),
+        "incidentDate": (datetime.now(timezone.utc) - timedelta(days=1)).isoformat(),
         "coordinates": {"lat": None, "lng": None}, "isAnonymous": False,
         "crowdfunding": {"enabled": False, "targetAmount": None, "purpose": None},
     }
@@ -90,7 +90,7 @@ try:
     as_user(fake("guest"))
     r = client.post("/issues", json=issue_payload(title="SHORT"))
     ok(r.status_code == 422, "validation rejects a bad title")
-    r = client.post("/issues", json=issue_payload(incidentDate=(datetime.utcnow() - timedelta(days=200)).isoformat()))
+    r = client.post("/issues", json=issue_payload(incidentDate=(datetime.now(timezone.utc) - timedelta(days=200)).isoformat()))
     ok(r.status_code == 422 and "90 days" in r.json()["error"], "validation rejects an old date")
     r = client.post("/issues", json=issue_payload())
     ok(r.status_code == 201 and r.json()["approvalStatus"] == "pending_review", "guest issue is created pending review")
