@@ -33,9 +33,10 @@ function pageTitle(path: string) {
 
 /** Brand splash shown for a moment on the first load, identical to the original app. */
 function SplashCover({ isDark }: { isDark: boolean }) {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   useEffect(() => {
-    const t = setTimeout(() => setVisible(false), 400);
+    setVisible(true);
+    const t = setTimeout(() => setVisible(false), 500);
     return () => clearTimeout(t);
   }, []);
 
@@ -46,7 +47,7 @@ function SplashCover({ isDark }: { isDark: boolean }) {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center ${isDark ? "bg-[#050a08]" : "bg-[#fafafa]"}`}
+          className={`fixed inset-0 z-[9999] pointer-events-none flex flex-col items-center justify-center ${isDark ? "bg-[#050a08]" : "bg-[#fafafa]"}`}
         >
           <motion.div initial={{ scale: 0.8, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 200, damping: 20 }} className="flex flex-col items-center">
             <motion.div
