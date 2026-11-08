@@ -1,0 +1,48 @@
+services:
+  # FastAPI backend (MongoDB Atlas + Firebase Admin)
+  - type: web
+    name: community-cleanliness-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.3
+      - key: MONGODB_URI
+        sync: false            # paste the Atlas connection string in the Render dashboard
+      - key: DB_NAME
+        value: communityDB
+      - key: FIREBASE_CREDENTIALS_JSON
+        sync: false            # full contents of the beautify-auth service-account JSON
+      - key: CORS_ORIGINS
+        value: https://community-cleanliness-web.onrender.com
+      - key: PUBLIC_API_URL
+        value: https://community-cleanliness-api.onrender.com
+
+  # Next.js frontend
+  - type: web
+    name: community-cleanliness-web
+    runtime: node
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 20.x
+      - key: NEXT_PUBLIC_API_URL
+        value: https://community-cleanliness-api.onrender.com
+      # Firebase web config of the `beautify-auth` project (copy from frontend/.env.local)
+      - key: NEXT_PUBLIC_FIREBASE_API_KEY
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_APP_ID
+        sync: false

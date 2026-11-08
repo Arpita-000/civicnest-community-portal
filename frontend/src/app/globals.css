@@ -1,0 +1,390 @@
+@import "tailwindcss";
+@import "remixicon/fonts/remixicon.css";
+@import "./Home.css";
+@custom-variant dark (&:is(.dark *));
+@plugin "daisyui" {
+  themes: light --default;
+}
+
+/* ── SaaS Compact Scaling (Proportional Root Scaling) — identical to the original app ── */
+html {
+  font-size: 16px;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 15.5px;
+  }
+}
+@media (min-width: 1024px) {
+  html {
+    font-size: 15px;
+  }
+}
+@media (min-width: 1440px) {
+  html {
+    font-size: 14.5px;
+  }
+}
+
+.font-logo {
+  font-family: "Montserrat", sans-serif !important;
+  font-weight: 900 !important;
+}
+
+@font-face {
+  font-family: "HKGrotesk";
+  src: url("/HKGrotesk-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ArenaTitle";
+  src: url("/arena-title.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "NewFont";
+  src: url("/newFont.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HKGrotesk";
+  src: url("/HKGrotesk-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "GreaterTheory";
+  src: url("/GreaterTheory.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-body: "Inter", sans-serif;
+  --font-heading: "Outfit", sans-serif;
+  --font-display: "Outfit", sans-serif;
+  --font-serif: "Inter", sans-serif;
+  --font-logo: "Montserrat", sans-serif;
+
+  /* Map the CSS variables to Tailwind v4 theme utility classes */
+  --color-cn-bg: var(--bg-page);
+  --color-cn-bg-green: var(--bg-page-green);
+  --color-cn-card: var(--bg-card);
+  --color-cn-card-hover: var(--bg-card-hover);
+  --color-cn-input: var(--bg-input);
+
+  --color-cn-border: var(--border);
+  --color-cn-border-hover: var(--border-hover);
+
+  --color-cn-text-1: var(--text-1);
+  --color-cn-text-2: var(--text-2);
+  --color-cn-text-3: var(--text-3);
+
+  --color-cn-teal: var(--teal);
+  --color-cn-teal-light: var(--teal-light);
+  --color-cn-teal-surface: var(--teal-surface);
+
+  --color-cn-sidebar-bg: var(--sidebar-bg);
+  --color-cn-sidebar-text: var(--sidebar-text);
+  --color-cn-sidebar-hover: var(--sidebar-hover);
+}
+
+/* ── Light mode ────────────────────────────────────────── */
+:root {
+  --bg-page: #fafafa;
+  --bg-page-green: #f0fdf4;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f4f4f5;
+  --bg-input: #fafafa;
+
+  --border: #e4e4e7;
+  --border-hover: #d4d4d8;
+
+  --text-1: #09090b;
+  --text-2: #52525b;
+  --text-3: #a1a1aa;
+
+  --teal: #0f766e;
+  --teal-light: #14b8a6;
+  --teal-surface: #f0fdfa;
+
+  --green-500: #22c55e;
+  --rose-500: #f43f5e;
+  --amber-500: #f59e0b;
+  --red-500: #ef4444;
+  --orange-500: #f97316;
+
+  --sidebar-bg: #030712;
+  --sidebar-text: #9ca3af;
+  --sidebar-hover: #111827;
+}
+
+/* ── Dark mode ─────────────────────────────────────────── */
+.dark {
+  --bg-page: #050a08;
+  --bg-page-green: #030806;
+  --bg-card: #0a120e;
+  --bg-card-hover: #0f1a14;
+  --bg-input: #070e0a;
+
+  --border: #14241d;
+  --border-hover: #1f362c;
+
+  --text-1: #fafafa;
+  --text-2: #a1a1aa;
+  --text-3: #71717a;
+
+  --teal: #2dd4bf;
+  --teal-light: #5eead4;
+  --teal-surface: #0f2a26;
+
+  --sidebar-bg: #030712;
+  --sidebar-text: #9ca3af;
+  --sidebar-hover: #111827;
+}
+
+@layer base {
+  /* Smooth transitions for theme toggling only when actively switching themes */
+  html.theme-transition,
+  html.theme-transition *,
+  html.theme-transition *::before,
+  html.theme-transition *::after {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke !important;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition-duration: 400ms !important;
+  }
+
+  body {
+    background-color: var(--bg-page);
+    color: var(--text-1);
+    font-family: var(--font-body);
+  }
+
+  /* Green design system used by polls / lost & found / NGOs */
+  :root {
+    --g-50: #f0fdf4;
+    --g-100: #dcfce7;
+    --g-200: #bbf7d0;
+    --g-300: #86efac;
+    --g-500: #22c55e;
+    --g-600: #16a34a;
+    --g-700: #15803d;
+    --g-900: #14532d;
+
+    --urgent: #f97316;
+    --emergency: #ef4444;
+    --treatment: #3b82f6;
+    --rescued: #22c55e;
+    --adopted: #8b5cf6;
+
+    --lost: #f43f5e;
+    --found: #16a34a;
+    --claimed: #6b7280;
+    --expired: #d1d5db;
+
+    --ngo-verified: #0d9488;
+    --ngo-pending: #f59e0b;
+    --ngo-featured: #7c3aed;
+  }
+
+  /* Lenis smooth scrolling integration (fluid inertia, no sticking or glue) */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  .lenis.lenis-scrolling iframe {
+    pointer-events: none;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(64, 130, 109, 0.4);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(64, 130, 109, 0.8);
+  }
+}
+
+@layer utilities {
+  .material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  }
+
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(15, 118, 110, 0.35) transparent;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(15, 118, 110, 0.35);
+    border-radius: 999px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(15, 118, 110, 0.55);
+  }
+
+  /* Premium button. The original references daisyUI's --color-primary-container which is never
+     defined there; we use the brand teal pair so the home CTA buttons are actually visible. */
+  .btn-premium {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border-radius: 9999px;
+    color: white;
+    background: linear-gradient(180deg, #14b8a6 0%, #0f766e 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.1),
+      0 4px 6px -1px rgba(15, 118, 110, 0.2),
+      0 2px 4px -2px rgba(15, 118, 110, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    cursor: pointer;
+    user-select: none;
+  }
+  .btn-premium:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      inset 0 -2px 0 rgba(0, 0, 0, 0.1),
+      0 10px 15px -3px rgba(15, 118, 110, 0.3),
+      0 4px 6px -4px rgba(15, 118, 110, 0.2);
+    filter: brightness(1.05);
+  }
+  .btn-premium:active {
+    transform: translateY(1px) scale(0.98);
+  }
+  .btn-premium::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transform: skewX(-20deg);
+    transition: none;
+  }
+  .btn-premium:hover::after {
+    left: 150%;
+    transition: left 0.6s ease-in-out;
+  }
+  .dark .btn-premium {
+    background: linear-gradient(180deg, #0f766e 0%, #0d5f58 100%);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+}
+
+@keyframes vibrate {
+  0%, 100% { transform: rotate(6deg) translate(0, 0); }
+  90% { transform: rotate(6deg) translate(0, 0); }
+  92% { transform: rotate(6deg) translate(-2px, 2px); }
+  94% { transform: rotate(6deg) translate(2px, -2px); }
+  96% { transform: rotate(6deg) translate(-2px, -2px); }
+  98% { transform: rotate(6deg) translate(2px, 2px); }
+}
+.animate-vibrate {
+  animation: vibrate 5s ease-in-out infinite;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 100px white inset !important;
+  -webkit-text-fill-color: #334155 !important;
+  border-radius: inherit !important;
+}
+
+/* ── Live-pulse marquee (home page ticker) ── */
+@keyframes marquee {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+  will-change: transform;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Compass icon in the navbar drawer */
+@keyframes compass-spin-wiggle {
+  0% { transform: rotate(0deg); color: var(--compass-idle); }
+  20% { transform: rotate(360deg); color: var(--compass-active); }
+  35% { transform: rotate(385deg); color: var(--compass-active); }
+  50% { transform: rotate(346deg); color: var(--compass-active); }
+  65% { transform: rotate(368deg); color: var(--compass-active); }
+  80% { transform: rotate(360deg); color: var(--compass-active); }
+  100% { transform: rotate(360deg); color: var(--compass-idle); }
+}
+.animated-compass {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  animation: compass-spin-wiggle 4.2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  transform-origin: center center !important;
+  --compass-idle: #64748b;
+  --compass-active: #0f766e;
+}
+.dark .animated-compass {
+  --compass-idle: #94a3b8;
+  --compass-active: #2dd4bf;
+}
+
+@keyframes fire-wobble {
+  0% { transform: rotate(-3deg) scale(0.95); }
+  100% { transform: rotate(3deg) scale(1.06); }
+}
+.fire-core-group {
+  transform-origin: 50px 95px;
+  animation: fire-wobble 0.9s ease-in-out infinite alternate;
+}
