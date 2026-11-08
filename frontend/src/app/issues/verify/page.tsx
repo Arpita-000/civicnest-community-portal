@@ -23,7 +23,7 @@ export default function VerifyIssuesPage() {
       const verifiable = all.filter(
         (i: any) =>
           i.status === 'pending_verification' ||
-          i.status === 'in-progress' ||
+          i.status === 'action_taken' ||
           (Array.isArray(i.resolutionProofs) && i.resolutionProofs.length > 0)
       );
       setIssues(verifiable.length > 0 ? verifiable : all.slice(0, 12));
@@ -48,9 +48,9 @@ export default function VerifyIssuesPage() {
       const res: any = await api.post(`/issues/${issueId}/verify`, {});
       const data = res?.data ?? res;
       toast.success(
-        data?.status === 'resolved'
+        data?.status === 'solved'
           ? 'Issue officially verified as Resolved! +10 Civic Points'
-          : `Verification recorded (${data?.verifiedCount || 1}/3 needed)! +10 Civic Points`
+          : `Verification recorded (${data?.verificationCount || 1}/3 needed)! +10 Civic Points`
       );
       loadIssues();
     } catch (err) {
@@ -154,15 +154,15 @@ export default function VerifyIssuesPage() {
                     <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
                       <button
                         onClick={() => handleVerify(issue._id)}
-                        disabled={alreadyVerified || verifyingId === issue._id || issue.status === 'resolved'}
+                        disabled={alreadyVerified || verifyingId === issue._id || issue.status === 'solved'}
                         className={`flex-1 py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition ${
-                          alreadyVerified || issue.status === 'resolved'
+                          alreadyVerified || issue.status === 'solved'
                             ? 'bg-emerald-50 text-emerald-700 cursor-not-allowed'
                             : 'bg-[#0f5c4d] text-white hover:bg-[#0b463a]'
                         }`}
                       >
                         <CheckCircle2 className="w-4 h-4" />
-                        {issue.status === 'resolved'
+                        {issue.status === 'solved'
                           ? 'Resolved'
                           : alreadyVerified
                           ? 'Verified by You'

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Toaster } from "react-hot-toast";
 import Navbar from "./Navbar";
@@ -10,7 +10,49 @@ import ScrollProgressButton from "./ScrollProgressButton";
 import FloatingCivicBot from "./FloatingCivicBot";
 import HelpNotification from "./HelpNotification";
 import TopProgressBar from "./TopProgressBar";
+import { MinimalLoader } from "./ui";
 import { useTheme } from "../hooks/useTheme";
+import { useAuth } from "../context/AuthContext";
+
+// Same access rules as the original app's PrivateRoute / MemberRoute / AdminRoute (main.jsx).
+const MEMBER_PATHS = ["/lost-found/add-lost", "/lost-found/add-found", "/animals/add", "/volunteers/register", "/cleanup-events/organize"];
+const PRIVATE_PREFIXES = [
+  "/recent-activities", "/gallery", "/issues", "/contributions", "/lost-found", "/animals", "/membership",
+  "/ai-assistant", "/profile", "/user", "/payment-success", "/payment-failure", "/noticeboard", "/volunteers",
+  "/volunteer-dashboard", "/forum", "/map", "/leaderboard", "/fund", "/support", "/ngos", "/polls", "/cleanup-events",
+];
+const under = (path: string, p: string) => path === p || path.startsWith(p + "/");
+
+function accessFor(path: string): "public" | "private" | "member" | "admin" {
+  if (under(path, "/admin")) return "admin";
+  if (MEMBER_PATHS.includes(path)) return "member";
+  return PRIVATE_PREFIXES.some((p) => under(path, p)) ? "private" : "public";
+}
+
+function RouteGuard({ path, children }: { path: string; children: React.ReactNode }) {
+  const { user, dbUser, role, isMember, loading } = useAuth();
+  const router = useRouter();
+  const need = accessFor(path);
+  // Role checks wait for the profile; a plain login check only waits for Firebase.
+  const pending = need !== "public" && (loading || (need !== "private" && !!user && !dbUser));
+  const allowed =
+    need === "public" || (!!user && (need === "private" || (need === "member" && isMember) || (need === "admin" && role === "admin")));
+
+  useEffect(() => {
+    if (pending || allowed) return;
+    if (need === "admin") router.replace("/");
+    else if (!user) router.replace(`/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`);
+    else router.replace("/membership/request");
+  }, [pending, allowed, need, user, router]);
+
+  if (pending || !allowed)
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <MinimalLoader />
+      </div>
+    );
+  return <>{children}</>;
+}
 
 const TITLES: Record<string, string> = {
   "/": "Home",
@@ -92,6 +134,20 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     document.title = `${pageTitle(pathname)} | CivicNest`;
   }, [pathname]);
 
+  // Seeded records point at loremflickr.com, which often answers 500: swap any broken image (once)
+  // for the generated /demo artwork. Pages with their own onError still run after this and win.
+  useEffect(() => {
+    const onError = (e: Event) => {
+      const img = e.target as HTMLImageElement;
+      if (img?.tagName !== "IMG" || img.dataset.fallback) return;
+      img.dataset.fallback = "1";
+      const kw = decodeURIComponent(img.src.split("?")[0].split("/").pop() || "").replace(/\.\w+$/, "").replace(/[^a-z0-9]+/gi, "-");
+      img.src = `/demo/${/portrait|avatar|face|user|logo|man|woman/i.test(kw) ? "avatar" : "event"}-${kw || "community"}.svg`;
+    };
+    document.addEventListener("error", onError, true);
+    return () => document.removeEventListener("error", onError, true);
+  }, []);
+
   return (
     <div className="min-h-screen w-full flex flex-col font-body antialiased selection:bg-teal-500/30 selection:text-teal-900 dark:selection:text-teal-100">
       <TopProgressBar />
@@ -107,7 +163,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         transition={{ duration: 0.25, ease: "easeOut" }}
         className="flex-grow flex flex-col w-full"
       >
-        <div className="flex-grow flex flex-col w-full">{children}</div>
+        <div className="flex-grow flex flex-col w-full">
+          <RouteGuard path={pathname}>{children}</RouteGuard>
+        </div>
         {!isAuthPage && <Footer />}
       </motion.main>
 

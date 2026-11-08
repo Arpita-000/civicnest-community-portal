@@ -300,9 +300,8 @@ def list_volunteers(
         {"$lookup": {"from": "users", "localField": "email", "foreignField": "email", "as": "userData"}},
         {"$unwind": {"path": "$userData", "preserveNullAndEmptyArrays": True}},
         {
+            # Inclusion projection: email/phone are left out (Mongo forbids mixing 0 with computed fields).
             "$project": {
-                "email": 0,
-                "phone": 0,
                 "uid": "$userData.uid",
                 "name": {"$ifNull": ["$userData.name", "$userData.displayName", "$name"]},
                 "photoURL": {"$ifNull": ["$userData.photoURL", "$photoURL"]},

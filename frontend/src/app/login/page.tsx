@@ -25,7 +25,7 @@ export default function LoginPage() {
     if (typeof window !== "undefined") {
       const sp = new URLSearchParams(window.location.search);
       const dest = sp.get("redirect") || sp.get("from");
-      if (dest) setRedirectPath(dest);
+      if (dest && dest.startsWith("/") && !dest.startsWith("//")) setRedirectPath(dest); // in-app paths only
     }
   }, []);
 

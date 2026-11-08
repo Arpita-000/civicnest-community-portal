@@ -42,7 +42,7 @@ export default function ThreadDetailsPage() {
       try {
         const res = await api.get("/forum", { fresh: true });
         if (mounted) {
-          const list = Array.isArray(res.data) ? res.data : [];
+          const list = Array.isArray(res.data) ? res.data : res.data?.threads || [];
           setThreads(list);
         }
       } catch {

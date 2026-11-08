@@ -88,3 +88,26 @@ Verified: `next build` passes (types included); pages screenshotted in light/dar
 
 ### Verification
 * `next build`: Exit Code 0, 46 static pages generated cleanly with Lenis smooth scrolling active.
+
+## Week 6 - Final handover pass (2026-11-08)
+
+Method: every page crawled in headless Chrome (desktop + 375 px mobile, light + dark) against the production build, every GET route swept with fake admin auth, and every frontend call matched against the backend route table. The original app was run side by side for visual comparison.
+
+| Area | Problem | Fix |
+|---|---|---|
+| Backend | `GET /volunteers` returned 503: `$project` mixed exclusion (`email: 0`) with computed fields | Inclusion-only projection (`routers/volunteers.py`) |
+| Backend | `/forum` returned 422: page asks for `limit=100`, API capped at 50 | Cap raised to 100 (`routers/forum.py`) |
+| Crash | `/fund` and admin events tab rendered the cleanup-event `location` object as text | `placeText()` helper in `lib/format.ts` |
+| Crash | `/gallery` called `.map` on `{ issues: [...] }` | Reads `res.data.issues` |
+| Crash | `/status` hydration mismatch (`new Date()` differs server vs client) | Stable "Checking..." text until data arrives |
+| Access | Most pages were open to guests and fired protected API calls (401s); `/admin` had no guard | One `RouteGuard` in `AppShell` mirroring the original `PrivateRoute` / `MemberRoute` / `AdminRoute` table; deep links survive login |
+| Security | `/login?redirect=` accepted any URL (open redirect) | Only in-app paths accepted |
+| Admin | Queue, All Issues, NGOs, Donations tabs read the wrong response shapes (always empty); stat cards used keys the API never sends; status dropdown wrote invalid statuses (`in-progress`, `resolved`); event approvals hit the issue endpoint | All mapped to the real API shapes, statuses and endpoints |
+| Profile | "My Cleanup Drives" and "Bookmarks" tabs always empty (API returns objects, page expected arrays) | Reads `organized`/`attending` and `bookmarkedIssues` |
+| Data | Verify feed and map used non-existent statuses (`in-progress`, `resolved`) | Use `action_taken` / `solved` / `open` |
+| UI | Forum thread sidebar always empty; Issues page "Open CivicBot AI" showed a "coming soon" toast | Fixed; button opens `/ai-assistant` like the original; `soon.ts` removed |
+| UI | Theme followed the OS dark setting; the original defaults to light | Light by default, saved choice still respected |
+| UI | Seeded `loremflickr.com` images often return 500 (broken images) | One global fallback to the generated `/demo/*.svg` artwork |
+| Data hygiene | Smoke-test cleanup regex was case-sensitive, so "Smoke test overflow" items stayed in the live feed | Cleanup made case-insensitive; 5 leftover incidents + 5 feed events removed |
+
+Verification: `next build` exit 0 (46 static pages); 51/52 routes with zero console errors / failed requests (the 52nd is the intended 404 page); no horizontal overflow at 375 px; 0 broken internal links; 86 GET routes with no 5xx; backend smoke test 48/48.

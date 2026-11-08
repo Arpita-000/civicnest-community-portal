@@ -21,7 +21,7 @@ def list_threads(
     category: Optional[str] = None,
     sort: str = Query("recent"),
     page: int = Query(1, ge=1),
-    limit: int = Query(20, ge=1, le=50),
+    limit: int = Query(20, ge=1, le=100),
 ):
     col = get_collection("forum")
     query: dict = {"approvalStatus": "approved"}

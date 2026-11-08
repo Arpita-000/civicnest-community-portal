@@ -511,7 +511,7 @@ export default function IssueDetailsPage() {
             </div>
           )}
 
-          {(proofs > 0 || issue.status === "in-progress") && issue.status !== "solved" && issue.status !== "resolved" && (
+          {(proofs > 0 || issue.status === "action_taken") && issue.status !== "solved" && issue.status !== "resolved" && (
             <div className="bg-white dark:bg-[#0a120e] ring-1 ring-slate-100 dark:ring-[#14241d] rounded-xl p-5 border border-amber-200 dark:border-amber-900/50 shadow-sm relative overflow-hidden">
               <h3 className="font-bold text-[13px] mb-1.5 flex items-center gap-2 text-amber-900 dark:text-amber-300 relative z-10 tracking-tight" style={{ fontFamily: "HKGrotesk, sans-serif" }}>
                 <i className="ri-shield-check-fill text-amber-500"></i> Verify Fix

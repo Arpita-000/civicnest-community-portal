@@ -13,7 +13,7 @@ export default function BeforeAfterGalleryPage() {
     api
       .get("/gallery")
       .then((res) => {
-        setItems(res.data || []);
+        setItems(Array.isArray(res.data) ? res.data : res.data?.issues || []);
         setLoading(false);
       })
       .catch(() => setLoading(false));

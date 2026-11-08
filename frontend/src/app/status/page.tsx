@@ -79,6 +79,8 @@ export default function StatusPage() {
 
   const lastUpdated = statusData?.timestamp
     ? new Date(statusData.timestamp).toLocaleString()
+    : isLoading
+    ? "Checking…" // same text on server and client, avoids a hydration mismatch
     : new Date().toLocaleString();
 
   return (

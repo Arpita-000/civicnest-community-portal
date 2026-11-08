@@ -12,6 +12,13 @@ export function displayName(name?: string | null, email?: string | null): string
   return null;
 }
 
+/** Issues store `location` as text, cleanup events as `{ address, area, coordinates }`. */
+export function placeText(loc: any, fallback = ""): string {
+  if (!loc) return fallback;
+  if (typeof loc === "string") return loc;
+  return [loc.address, loc.area].filter(Boolean).join(", ") || fallback;
+}
+
 export function formatDateTime(value?: string | Date | null): string {
   if (!value) return "";
   const d = new Date(value);

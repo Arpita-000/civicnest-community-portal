@@ -7,7 +7,6 @@ import { Typewriter } from "react-simple-typewriter";
 import api from "../../lib/api";
 import SocialFeedCard from "../../components/SocialFeedCard";
 import { BackButton, MinimalLoader, PremiumDropdown } from "../../components/ui";
-import { comingSoon } from "../../components/soon";
 
 const SECTORS = [
   { label: "Garbage & Waste", image: "https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&w=500&q=80" },
@@ -125,7 +124,7 @@ export default function AllIssuesPage() {
               </p>
             </div>
           </div>
-          <button type="button" onClick={() => comingSoon("CivicBot AI")} className="px-4 py-2 bg-[#0f766e] hover:bg-[#0d645d] text-white rounded-lg text-xs font-bold transition-all shadow-sm cursor-pointer">
+          <button type="button" onClick={() => router.push("/ai-assistant")} className="px-4 py-2 bg-[#0f766e] hover:bg-[#0d645d] text-white rounded-lg text-xs font-bold transition-all shadow-sm cursor-pointer">
             Open CivicBot AI
           </button>
         </div>

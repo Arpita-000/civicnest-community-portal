@@ -123,10 +123,10 @@ export default function CommunityMapPage() {
                 className="px-3 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#0a120e] border border-slate-200 dark:border-[#14241d] text-slate-700 dark:text-slate-200"
               >
                 <option value="all">All Statuses</option>
-                <option value="pending">Pending</option>
-                <option value="in-progress">In Progress</option>
+                <option value="open">Open</option>
+                <option value="action_taken">Action Taken</option>
                 <option value="pending_verification">Pending Verification</option>
-                <option value="resolved">Resolved</option>
+                <option value="solved">Solved</option>
               </select>
             )}
           </div>
@@ -173,7 +173,7 @@ export default function CommunityMapPage() {
                         className={`inline-block text-[10px] font-bold uppercase px-2 py-0.5 rounded mb-1 ${
                           activePin._kind === "event"
                             ? "bg-sky-500/15 text-sky-600 dark:text-sky-400"
-                            : activePin.status === "resolved"
+                            : activePin.status === "solved"
                             ? "bg-emerald-500/15 text-emerald-600"
                             : "bg-rose-500/15 text-rose-600"
                         }`}
@@ -215,9 +215,9 @@ export default function CommunityMapPage() {
                 const dotColor =
                   item._kind === "event"
                     ? "bg-sky-500"
-                    : item.status === "resolved"
+                    : item.status === "solved"
                     ? "bg-emerald-500"
-                    : item.status === "in-progress" || item.status === "pending_verification"
+                    : item.status === "action_taken" || item.status === "pending_verification"
                     ? "bg-amber-500"
                     : "bg-rose-500";
                 return (

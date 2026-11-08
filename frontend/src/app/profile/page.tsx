@@ -10,6 +10,7 @@ import { useAuth } from "../../context/AuthContext";
 import api, { errMsg, uploadImage } from "../../lib/api";
 import SocialFeedCard from "../../components/SocialFeedCard";
 import { MinimalLoader } from "../../components/ui";
+import { placeText } from "../../lib/format";
 
 const TABS = [
   { id: "overview", label: "Overview", icon: "ri-dashboard-line" },
@@ -84,8 +85,13 @@ export default function ProfilePage() {
     api.get("/credits/issues").then((r) => alive && setCredits(r.data ?? r)).catch(() => {});
     api.get("/lost-found/my").then((r: any) => alive && setLostFoundItems(Array.isArray(r.data) ? r.data : Array.isArray(r) ? r : [])).catch(() => {});
     api.get("/contributions/my").then((r: any) => alive && setDonations(Array.isArray(r.data) ? r.data : Array.isArray(r) ? r : [])).catch(() => {});
-    api.get("/cleanup-events/my").then((r: any) => alive && setMyCleanups(Array.isArray(r.data) ? r.data : Array.isArray(r) ? r : [])).catch(() => {});
-    api.get("/users/my/bookmarks").then((r: any) => alive && setBookmarks(Array.isArray(r.data) ? r.data : Array.isArray(r) ? r : [])).catch(() => {});
+    // API returns { organized, attending } and { bookmarkedIssues, bookmarkedEvents }.
+    api.get("/cleanup-events/my").then((r: any) => {
+      if (!alive) return;
+      const all = [...(r.data?.organized || []), ...(r.data?.attending || [])];
+      setMyCleanups(all.filter((ev, i) => all.findIndex((x) => x._id === ev._id) === i));
+    }).catch(() => {});
+    api.get("/users/my/bookmarks").then((r: any) => alive && setBookmarks(r.data?.bookmarkedIssues || [])).catch(() => {});
     return () => {
       alive = false;
     };
@@ -502,7 +508,7 @@ export default function ProfilePage() {
                     {myCleanups.map((ev) => (
                       <Link key={ev._id} href={`/cleanup-events/${ev._id}`} className="p-4 rounded-xl border border-slate-100 hover:border-[#40826D]/40 transition">
                         <h4 className="font-bold text-slate-900 dark:text-white text-sm">{ev.title}</h4>
-                        <p className="text-xs text-slate-500 mt-1">{ev.location?.area || ev.location}</p>
+                        <p className="text-xs text-slate-500 mt-1">{placeText(ev.location)}</p>
                       </Link>
                     ))}
                   </div>

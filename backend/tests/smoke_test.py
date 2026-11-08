@@ -64,9 +64,9 @@ def cleanup():
     get_collection("comments").delete_many({"issueId": {"$in": ids}})
     get_collection("issues").delete_many({"_id": {"$in": ids}})
     get_collection("polls").delete_many({"createdBy": {"$in": [TEST_EMAIL, ADMIN_EMAIL]}})
-    get_collection("feed_events").delete_many({"data.title": {"$regex": "smoke test"}})
-    get_collection("feed_events").delete_many({"data.question": {"$regex": "smoke test"}})
-    get_collection("incidents").delete_many({"title": {"$regex": "smoke test"}})
+    get_collection("feed_events").delete_many({"data.title": {"$regex": "smoke test", "$options": "i"}})
+    get_collection("feed_events").delete_many({"data.question": {"$regex": "smoke test", "$options": "i"}})
+    get_collection("incidents").delete_many({"title": {"$regex": "smoke test", "$options": "i"}})
 
 
 try:

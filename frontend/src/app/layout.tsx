@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, colorScheme: "light dark" };
 
-// Runs before first paint so there is no light/dark flash on reload.
-const THEME_BOOT = `(function(){try{var t=localStorage.getItem('civicnest-theme');var d=window.matchMedia('(prefers-color-scheme:dark)').matches;if(t==='dark'||(!t&&d))document.documentElement.classList.add('dark');}catch(e){}})();`;
+// Runs before first paint so there is no light/dark flash on reload. Light by default, like the original.
+const THEME_BOOT = `(function(){try{if(localStorage.getItem('civicnest-theme')==='dark')document.documentElement.classList.add('dark');}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

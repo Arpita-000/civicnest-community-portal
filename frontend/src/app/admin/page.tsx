@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import api, { errMsg } from '@/lib/api';
+import { placeText } from '@/lib/format';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 import {
@@ -71,27 +72,32 @@ export default function AdminDashboardPage() {
         donRes,
       ]: any = await Promise.all([
         api.get('/admin/stats').catch(() => ({})),
-        api.get('/admin/queue').catch(() => []),
-        api.get('/admin/posts').catch(() => []),
+        api.get('/admin/queue', { params: { status: 'pending_review', limit: 50 } }).catch(() => []),
+        api.get('/admin/queue', { params: { type: 'issues', limit: 50 } }).catch(() => []),
         api.get('/admin/users').catch(() => []),
         api.get('/admin/membership').catch(() => []),
         api.get('/admin/volunteers').catch(() => []),
         api.get('/admin/cleanup-events').catch(() => []),
         api.get('/admin/ngos').catch(() => []),
         api.get('/announcements').catch(() => []),
-        api.get('/admin/donations').catch(() => ({ donations: [], totalAmount: 0 })),
+        api.get('/admin/donations').catch(() => []),
       ]);
       const unwrap = (r: any) => r?.data ?? r;
+      const list = (r: any, key: string) => {
+        const d = unwrap(r);
+        return Array.isArray(d) ? d : Array.isArray(d?.[key]) ? d[key] : [];
+      };
       setStats(unwrap(statsRes) || {});
-      setQueue(Array.isArray(unwrap(qRes)) ? unwrap(qRes) : []);
-      setIssues(Array.isArray(unwrap(issRes)) ? unwrap(issRes) : []);
+      setQueue(list(qRes, 'issues'));
+      setIssues(list(issRes, 'issues'));
       setUsers(Array.isArray(unwrap(usrRes)) ? unwrap(usrRes) : []);
       setMemberships(Array.isArray(unwrap(memRes)) ? unwrap(memRes) : []);
       setVolunteers(Array.isArray(unwrap(volRes)) ? unwrap(volRes) : []);
       setEvents(Array.isArray(unwrap(evRes)) ? unwrap(evRes) : []);
-      setNgos(Array.isArray(unwrap(ngoRes)) ? unwrap(ngoRes) : []);
+      setNgos(list(ngoRes, 'ngos'));
       setNotices(Array.isArray(unwrap(annRes)) ? unwrap(annRes) : []);
-      setDonations(unwrap(donRes) || { donations: [], totalAmount: 0 });
+      const dons = list(donRes, 'donations');
+      setDonations({ donations: dons, totalAmount: dons.reduce((s: number, d: any) => s + Number(d.amount || 0), 0) });
     } catch (err) {
       toast.error(errMsg(err));
     } finally {
@@ -103,20 +109,24 @@ export default function AdminDashboardPage() {
     if (user) loadAll();
   }, [user]);
 
-  const handleQueueApprove = async (id: string) => {
+  // The queue mixes issues and cleanup events (`_type: 'cleanup_event'`), which have their own endpoints.
+  const queuePath = (item: any, action: 'approve' | 'reject') =>
+    item._type === 'cleanup_event' ? `/admin/cleanup-events/${item._id}/${action}` : `/admin/issues/${item._id}/${action}`;
+
+  const handleQueueApprove = async (item: any) => {
     try {
-      await api.patch(`/admin/issues/${id}/approve`, {});
-      toast.success('Issue approved & published');
+      await api.patch(queuePath(item, 'approve'), {});
+      toast.success(item._type === 'cleanup_event' ? 'Event approved & published' : 'Issue approved & published');
       loadAll();
     } catch (err) {
       toast.error(errMsg(err));
     }
   };
 
-  const handleQueueReject = async (id: string) => {
+  const handleQueueReject = async (item: any) => {
     try {
-      await api.patch(`/admin/issues/${id}/reject`, { reason: 'Moderation policy' });
-      toast.success('Issue rejected');
+      await api.patch(queuePath(item, 'reject'), { reason: 'Moderation policy' });
+      toast.success(item._type === 'cleanup_event' ? 'Event rejected' : 'Issue rejected');
       loadAll();
     } catch (err) {
       toast.error(errMsg(err));
@@ -266,10 +276,10 @@ export default function AdminDashboardPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
             {[
               { label: 'Total Citizens', value: stats.totalUsers ?? users.length, color: 'text-[#0f5c4d]' },
-              { label: 'Reported Issues', value: stats.totalPosts ?? issues.length, color: 'text-amber-600' },
-              { label: 'Resolved Issues', value: stats.resolvedPosts ?? 0, color: 'text-emerald-600' },
-              { label: 'Pending Queue', value: stats.pendingQueue ?? queue.length, color: 'text-rose-600' },
-              { label: 'Verified Members', value: stats.totalMembers ?? 0, color: 'text-teal-700' },
+              { label: 'Reported Issues', value: stats.totalIssues ?? issues.length, color: 'text-amber-600' },
+              { label: 'Resolved Issues', value: stats.solvedIssues ?? 0, color: 'text-emerald-600' },
+              { label: 'Pending Queue', value: queue.length, color: 'text-rose-600' },
+              { label: 'Verified Members', value: users.filter((u) => u.role === 'member' || u.role === 'admin').length, color: 'text-teal-700' },
               { label: 'Active Volunteers', value: stats.totalVolunteers ?? volunteers.length, color: 'text-blue-600' },
               { label: 'Cleanup Drives', value: stats.totalEvents ?? events.length, color: 'text-purple-600' },
               {
@@ -308,13 +318,13 @@ export default function AdminDashboardPage() {
                     </div>
                     <div className="flex gap-2 shrink-0">
                       <button
-                        onClick={() => handleQueueApprove(item._id)}
+                        onClick={() => handleQueueApprove(item)}
                         className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700"
                       >
                         Approve
                       </button>
                       <button
-                        onClick={() => handleQueueReject(item._id)}
+                        onClick={() => handleQueueReject(item)}
                         className="px-4 py-2 rounded-xl bg-red-50 text-red-600 text-xs font-bold hover:bg-red-100"
                       >
                         Reject
@@ -347,7 +357,7 @@ export default function AdminDashboardPage() {
                         {iss.title}
                       </Link>
                     </td>
-                    <td className="py-3.5 px-5 text-xs text-gray-500">{iss.location}</td>
+                    <td className="py-3.5 px-5 text-xs text-gray-500">{placeText(iss.location)}</td>
                     <td className="py-3.5 px-5">
                       <select
                         value={iss.status || 'open'}
@@ -355,9 +365,9 @@ export default function AdminDashboardPage() {
                         className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-bold bg-white"
                       >
                         <option value="open">Open</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="resolved">Resolved</option>
-                        <option value="rejected">Rejected</option>
+                        <option value="action_taken">Action Taken</option>
+                        <option value="pending_verification">Pending Verification</option>
+                        <option value="solved">Solved</option>
                       </select>
                     </td>
                     <td className="py-3.5 px-5 text-right">
@@ -514,7 +524,7 @@ export default function AdminDashboardPage() {
                     {ev.title}
                   </Link>
                   <div className="text-xs text-gray-500">
-                    {ev.location} • {ev.date ? new Date(ev.date).toLocaleDateString() : ''}
+                    {placeText(ev.location)} • {ev.date ? new Date(ev.date).toLocaleDateString() : ''}
                   </div>
                 </div>
                 <span className="text-xs font-bold uppercase px-3 py-1 rounded-full bg-emerald-50 text-[#0f5c4d]">
@@ -535,10 +545,10 @@ export default function AdminDashboardPage() {
               >
                 <div>
                   <div className="font-bold text-gray-900">{n.name}</div>
-                  <div className="text-xs text-gray-500">{n.focusArea || n.category}</div>
+                  <div className="text-xs text-gray-500">{(n.focusAreas || []).join(', ') || n.focusArea || n.category}</div>
                 </div>
                 <div className="flex items-center gap-2">
-                  {n.verified ? (
+                  {n.verified || n.status === 'verified' ? (
                     <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold">
                       Verified Partner
                     </span>

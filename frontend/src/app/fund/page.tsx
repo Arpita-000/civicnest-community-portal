@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import api, { errMsg } from '@/lib/api';
+import { placeText } from '@/lib/format';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 import { HeartHandshake, MapPin, ArrowLeft, Sparkles, CheckCircle2, X } from 'lucide-react';
@@ -153,7 +154,7 @@ export default function FundCleanupPage() {
                     <h3 className="font-bold text-gray-900 text-lg line-clamp-1 mb-1">{item.title}</h3>
                     <p className="text-xs text-gray-500 flex items-center gap-1 mb-3">
                       <MapPin className="w-3.5 h-3.5 text-emerald-600" />
-                      <span className="truncate">{item.location || 'Dhaka'}</span>
+                      <span className="truncate">{placeText(item.location, 'Dhaka')}</span>
                     </p>
                     <p className="text-sm text-gray-600 line-clamp-2 mb-4 flex-1">{item.description}</p>
 
